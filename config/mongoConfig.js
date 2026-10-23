@@ -1,7 +1,7 @@
 module.exports = {
   development: {
-    host: process.env.HOST,
-    port: 27017,
-    dbName: 'users_db_development',
+    host: process.env.DB_HOST,
+    port: process.env.DB_PORT,
+    dbName: process.env.DB_NAME,
   },
 };
