@@ -6,7 +6,7 @@ const phonesRouter = Router();
 
 phonesRouter
   .route('/')
-  .post(phonesController.createPhone)
+  .post(validation.validatePhoneOnCreate, phonesController.createPhone)
   .get(
     validation.validatePagination,
     paginate.pagination,
@@ -18,7 +18,7 @@ phonesRouter.use('/:id', validation.validateId);
 phonesRouter
   .route('/:id')
   .get(phonesController.getPhoneById)
-  .patch(phonesController.updatePhoneById)
+  .patch(validation.validatePhoneOnUpdate, phonesController.updatePhoneById)
   .delete(phonesController.deletePhoneById);
 
 module.exports = phonesRouter;
