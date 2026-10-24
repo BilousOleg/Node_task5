@@ -4,17 +4,48 @@ POST http://localhost:5000/api/phones
 Content-Type: application/json
 
 {
-  
+  "model": "Galaxy S34",
+  "brand": "Samsung",
+  "manufacturedYear": 2018,
+  "ramSize": 8000,
+  "cpu": "Exynos 990",
+  "screenDiagonal": 6.2,
+  "hasNfc": true
+}
+
+### 422
+
+POST http://localhost:5000/api/phones
+Content-Type: application/json
+
+{
+  "model": "Galaxy S27",
+  "brand": "Samsung",
+  "manufacturedYear": 2000,
+  "ramSize": "qwe",
+  "cpu": "Exynos 990",
+  "screenDiagonal": 100
 }
 
 ### 200
 
 GET http://localhost:5000/api/phones
 
+### 201
+
+POST http://localhost:5000/api/users/6adbf2308f82ce46f16984da/phones
+Content-Type: application/json
+
+{
+  "model": "Galaxy A19",
+  "brand": "Samsung",
+  "manufacturedYear": 2019,
+  "ramSize": 7000,
+  "cpu": "Exynos 990",
+  "screenDiagonal": 6.1,
+  "hasNfc": true
+}
+
 ### 200
 
-# GET http://localhost:5000/api/phones/
-
-### 200
-
-### 204
+GET http://localhost:5000/api/users/6adbf2308f82ce46f16984da/phones

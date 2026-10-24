@@ -1,0 +1,16 @@
+### 201
+
+POST http://localhost:5000/api/users
+Content-Type: application/json
+
+{
+  "firstName": "Test",
+  "lastName": "Testovych",
+  "email": "test@test.com",
+  "birthday": "2020-01-01",
+  "gender": "male"
+}
+
+### 200
+
+GET http://localhost:5000/api/users

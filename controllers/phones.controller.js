@@ -1,5 +1,7 @@
+const mongoose = require('mongoose');
+const _ = require('lodash');
 const createHttpError = require('http-errors');
-const { Phone } = require('../model');
+const { Phone, User } = require('../models');
 
 module.exports.createPhone = async (req, res, next) => {
   const { body } = req;
@@ -81,6 +83,68 @@ module.exports.deletePhoneById = async (req, res, next) => {
     }
 
     res.status(204).send();
+  } catch (err) {
+    next(err);
+  }
+};
+
+module.exports.createUserPhone = async (req, res, next) => {
+  const {
+    params: { id },
+    body,
+  } = req;
+
+  try {
+    const foundUser = await User.findById(id);
+
+    if (!foundUser) {
+      return next(createHttpError(404, 'User Not Found'));
+    }
+
+    const newPhone = { ...body, userId: new mongoose.Types.ObjectId(id) };
+    const createdPhone = await Phone.create(newPhone);
+
+    if (!createdPhone) {
+      return next(createHttpError(400, 'Bad Request'));
+    }
+
+    const preparedPhone = _.omit(createdPhone.toObject(), ['updatedAt']);
+
+    res.status(201).send({ data: preparedPhone });
+  } catch (err) {
+    next(err);
+  }
+};
+
+module.exports.getUserPhones = async (req, res, next) => {
+  const { id } = req.params;
+
+  try {
+    const foundPhones = await User.aggregate()
+      .match({ _id: new mongoose.Types.ObjectId(id) })
+      .lookup({
+        from: 'phones',
+        localField: '_id',
+        foreignField: 'userId',
+        as: 'userPhones',
+      })
+      .project({ userPhones: 1, _id: 0 });
+
+    if (!foundPhones.length) {
+      return next(createHttpError(404, 'User Not Found'));
+    }
+
+    console.log(foundPhones);
+
+    const userPhones = foundPhones[0].userPhones.map(phone => ({
+      ...phone,
+      screenDiagonal:
+        phone.screenDiagonal == null
+          ? phone.screenDiagonal
+          : Number(phone.screenDiagonal.toString()),
+    }));
+
+    res.status(200).send({ data: userPhones });
   } catch (err) {
     next(err);
   }

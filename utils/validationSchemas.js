@@ -1,9 +1,11 @@
 const yup = require('yup');
 const mongoose = require('mongoose');
+const { GENDERS } = require('../constants');
 
 const textValidationSchema = fieldName =>
   yup
     .string()
+    .trim()
     .typeError(`${fieldName} must be a string`)
     .min(1, `${fieldName} must not be empty`)
     .max(100, `${fieldName} must not exceed 100 characters`);
@@ -77,3 +79,38 @@ module.exports.ID_VALIDATION_SCHEMA = yup
   .test('object-id', 'Invalid id format', value =>
     mongoose.isObjectIdOrHexString(value)
   );
+
+const EMAIL_VALIDATION_SCHEMA = yup.string().email();
+module.exports.EMAIL_VALIDATION_SCHEMA = EMAIL_VALIDATION_SCHEMA;
+
+const genderField = yup.string().oneOf(GENDERS, 'Invalid gender');
+const birthdayField = yup
+  .string()
+  .matches(/^\d{4}-\d{2}-\d{2}$/, 'Birthday must be in YYYY-MM-DD format')
+  .test('valid-date', 'Birthday must be a valid date', value => {
+    if (!value) return true;
+
+    const [year, month, day] = value.split('-').map(v => Number(v));
+    const date = new Date(Date.UTC(year, month - 1, day));
+
+    return (
+      date.getUTCFullYear() === year &&
+      date.getUTCMonth() === month - 1 &&
+      date.getUTCDate() === day
+    );
+  })
+  .test(
+    'not-future',
+    'Birthday cannot be in the future',
+    value => !value || value <= new Date().toISOString().slice(0, 10)
+  );
+
+module.exports.CREATE_USER_VALIDATION_SCHEMA = yup.object({
+  firstName: textValidationSchema('First name').required(
+    'Last name is required'
+  ),
+  lastName: textValidationSchema('Last name').required('Last name is required'),
+  email: EMAIL_VALIDATION_SCHEMA.required('Email is required'),
+  birthday: birthdayField.required('Birthday is required'),
+  gender: genderField.required('Gender is required'),
+});

@@ -5,7 +5,7 @@ const path = require('path');
 const mongoose = require('mongoose');
 const basename = path.basename(__filename);
 const env = process.env.NODE_ENV ?? 'development';
-const { host, port, dbName } = require(__dirname + '../config/mongoConfig.js')[
+const { host, port, dbName } = require(__dirname + '/../config/mongoConfig.js')[
   env
 ];
 const db = {};
@@ -26,7 +26,7 @@ fs.readdirSync(__dirname)
   })
   .forEach(file => {
     const model = require(path.join(__dirname, file));
-    db[model.name] = model;
+    db[model.modelName] = model;
   });
 
 module.exports = db;
