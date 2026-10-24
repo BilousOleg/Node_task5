@@ -1,0 +1,23 @@
+{
+  "name": "node_task5",
+  "version": "1.0.0",
+  "description": "",
+  "private": true,
+  "scripts": {
+    "dev": "nodemon -r dotenv/config ."
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "nodemon": "^3.1.14"
+  },
+  "dependencies": {
+    "dotenv": "^18.0.9",
+    "express": "^5.3.0",
+    "http-errors": "^2.0.1",
+    "mongoose": "^9.11.4",
+    "yup": "^1.7.1"
+  }
+}
