@@ -1,0 +1,49 @@
+### 201
+
+POST http://localhost:5000/api/products
+Content-Type: application/json
+
+{
+  "productName": "Wireless Headphones",
+  "description": "Comfortable wireless abc headphones with abc active noise cancellation and long battery life for everyday use.",
+  "category": "Audio Equipment",
+  "price": "99.99",
+  "count": 25,
+  "discount": 10
+}
+
+### 201
+
+POST http://localhost:5000/api/products
+Content-Type: application/json
+
+{
+  "productName": "Gaming Mouse",
+  "description": "An ergonomic gaming mouse with adjustable DPI, programmable buttons and RGB lighting.",
+  "category": "Computer Accessories",
+  "price": "49.99",
+  "count": 40,
+  "discount": 0
+}
+
+### 422
+
+POST http://localhost:5000/api/products
+Content-Type: application/json
+
+{
+  "productName": "Wireless Headphones",
+  "description": "Comfortable wireless headphones with active noise cancellation and long battery life for everyday use.",
+  "category": "Audio Equipment",
+  "price": "-99.99",
+  "count": -34,
+  "discount": "abc"
+}
+
+### 200
+
+GET http://localhost:5000/api/products?page=1&results=10
+
+### 200
+
+GET http://localhost:5000/api/products/6adf3e396433d0a6ab4cb09e

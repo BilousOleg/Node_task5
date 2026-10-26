@@ -3,6 +3,9 @@ const convertDecimal128 = require('../utils/convertDecimal128');
 const {
   PRODUCT_NAME_SCHEMA,
   DESCRIPTION_SCHEMA,
+  PRICE_VALIDATION_SCHEMA,
+  COUNT_SCHEMA,
+  DISCOUNT_SCHEMA,
 } = require('../utils/validationSchemas');
 const { CATEGORIES } = require('../constants');
 
@@ -35,30 +38,25 @@ const productSchema = new mongoose.Schema({
   price: {
     type: mongoose.Schema.Types.Decimal128,
     required: true,
-    min: [0.01, 'Price must be greater than 0'],
     validate: {
-      validator: v => PRICE_VALIDATION_SCHEMA.isValidSync(v.toString()),
+      validator: v => v != null && PRICE_VALIDATION_SCHEMA.isValidSync(v),
       message: 'Price must be positive and have at most 2 decimal places',
     },
   },
   count: {
     type: Number,
     required: true,
-    min: 0,
     validate: {
-      validator: Number.isInteger,
-      message: 'Count must be integer',
+      validator: v => v != null && COUNT_SCHEMA.isValidSync(v),
+      message: 'Count must be non-negative integer',
     },
   },
   discount: {
     type: Number,
-    required: true,
-    default: 0,
-    min: [0, 'Discount cannot be less than 0'],
-    max: [100, 'Discount cannot exceed 100'],
+    default: null,
     validate: {
-      validator: Number.isInteger,
-      message: 'Discount must be an integer',
+      validator: v => v == null || DISCOUNT_SCHEMA.isValidSync(v),
+      message: 'Discount must be an integer between 0 and 100',
     },
   },
 });

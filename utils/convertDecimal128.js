@@ -1,11 +1,9 @@
-const convertDecimal128 = fieldName => {
-  return (doc, ret) => {
-    if (ret[fieldName] != null) {
-      ret[fieldName] = Number(ret[fieldName].toString());
-    }
+const convertDecimal128 = fieldName => (doc, ret) => {
+  if (ret[fieldName] != null) {
+    ret[fieldName] = ret[fieldName].toString();
+  }
 
-    return ret;
-  };
+  return ret;
 };
 
 module.exports = convertDecimal128;
