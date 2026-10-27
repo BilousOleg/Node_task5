@@ -1,0 +1,75 @@
+### 201
+
+POST http://localhost:5000/api/clients
+Content-Type: application/json
+
+{
+  "clientName": "TestClient",
+  "email": "test@test.com",
+  "password": "test1234",
+  "deliveryAddress": {
+    "country": "Ukraine",
+    "region": "Dnipropetrovsk Oblast",
+    "city": "Dnipro",
+    "street": "Central Street",
+    "building": "10",
+    "apartment": "25",
+    "postalCode": "49000"
+  }
+}
+
+### 201
+
+POST http://localhost:5000/api/clients
+Content-Type: application/json
+
+{
+  "clientName": "TestClient1",
+  "email": "test1@test.com",
+  "password": "test1234"
+}
+
+### 422
+
+POST http://localhost:5000/api/clients
+Content-Type: application/json
+
+{
+  "clientName": "TestClient2",
+  "email": "test2@test.com",
+  "password": "test"
+}
+
+### 200
+
+GET http://localhost:5000/api/clients?page=1&results=10
+
+### 200
+
+GET http://localhost:5000/api/clients/6adfa84d7d145f8cc80e080f
+
+### 200
+
+PATCH http://localhost:5000/api/clients/6adfa84d7d145f8cc80e080f
+Content-Type: application/json
+
+{
+  "clientName": "TestClient3412",
+  "email": "test4@test.com"
+}
+
+### 204
+
+DELETE http://localhost:5000/api/clients/6adfa84d7d145f8cc80e080f
+
+### 200
+
+PUT http://localhost:5000/api/clients/6adfa84f7d145f8cc80e0810/favorites/6adfe37d2f6f1db710b8306b
+
+### 200
+
+GET http://localhost:5000/api/clients/6adfa84f7d145f8cc80e0810/favorites
+
+### 200
+
+DELETE http://localhost:5000/api/clients/6adfa84f7d145f8cc80e0810/favorites/6adfe37d2f6f1db710b8306b

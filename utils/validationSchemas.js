@@ -2,7 +2,11 @@ const yup = require('yup');
 const mongoose = require('mongoose');
 const { PRICE_REGEX, CATEGORIES } = require('../constants');
 
-const EMAIL_VALIDATION_SCHEMA = yup.string().email();
+const EMAIL_VALIDATION_SCHEMA = yup
+  .string()
+  .trim()
+  .lowercase()
+  .email('Incorrect email');
 
 const PRICE_VALIDATION_SCHEMA = yup
   .string()
@@ -67,43 +71,67 @@ const integerNumber = (fieldName, { min, max, defaultValue } = {}) => {
 
 const enumField = (fieldName, enumList) => yup.string().oneOf(enumList);
 
-const PRODUCT_NAME_SCHEMA = noWhitespaceString('Product name', {
+const PRODUCT_NAME_VALIDATION_SCHEMA = noWhitespaceString('Product name', {
   minLen: 2,
   maxLen: 128,
 });
 
-const DESCRIPTION_SCHEMA = noWhitespaceString('Description', {
+const DESCRIPTION_VALIDATION_SCHEMA = noWhitespaceString('Description', {
   minLen: 50,
   maxLen: 2000,
 });
 
-const CATEGORY_SCHEMA = enumField('Category', CATEGORIES);
+const CATEGORY_VALIDATION_SCHEMA = enumField('Category', CATEGORIES);
 
-const COUNT_SCHEMA = integerNumber('Count', { min: 0 });
+const COUNT_VALIDATION_SCHEMA = integerNumber('Count', { min: 0 });
 
-const DISCOUNT_SCHEMA = integerNumber('Discount', {
+const DISCOUNT_VALIDATION_SCHEMA = integerNumber('Discount', {
   min: 0,
   max: 100,
 }).nullable();
 
-const CLIENT_NAME_SCHEMA = noWhitespaceString('Client name', {
+const CLIENT_NAME_VALIDATION_SCHEMA = noWhitespaceString('Client name', {
   minLen: 2,
   maxLen: 64,
 });
 
-const REVIEW_COMMENT_SCHEMA = noWhitespaceString('Comment', {
+const REVIEW_COMMENT_VALIDATION_SCHEMA = noWhitespaceString('Comment', {
   maxLen: 2000,
 });
+
+const PASSWORD_VALIDATION_SCHEMA = yup
+  .string()
+  .min(8, 'Password must be at least 8 characters long')
+  .max(128, 'Password cannot exceed 128 characters')
+  .test(
+    'not-blank',
+    'Password cannot contain only whitespaces',
+    value => value == null || value.trim().length > 0
+  );
+
+const DELIVERY_ADDRESS_VALIDATION_SCHEMA = yup
+  .object({
+    country: noWhitespaceString('Country', { maxLen: 100 }),
+    region: noWhitespaceString('Region', { maxLen: 100 }),
+    city: noWhitespaceString('City', { maxLen: 100 }),
+    street: noWhitespaceString('Street', { maxLen: 150 }),
+    building: noWhitespaceString('Building', { maxLen: 20 }),
+    apartment: noWhitespaceString('Apartment', { maxLen: 20 }),
+    postalCode: noWhitespaceString('Postal code', { maxLen: 20 }),
+  })
+  .optional();
 
 module.exports = {
   EMAIL_VALIDATION_SCHEMA,
   PRICE_VALIDATION_SCHEMA,
-  PRODUCT_NAME_SCHEMA,
-  DESCRIPTION_SCHEMA,
-  COUNT_SCHEMA,
-  DISCOUNT_SCHEMA,
-  CLIENT_NAME_SCHEMA,
-  REVIEW_COMMENT_SCHEMA,
+  PRODUCT_NAME_VALIDATION_SCHEMA,
+  DESCRIPTION_VALIDATION_SCHEMA,
+  COUNT_VALIDATION_SCHEMA,
+  DISCOUNT_VALIDATION_SCHEMA,
+  CLIENT_NAME_VALIDATION_SCHEMA,
+  PASSWORD_VALIDATION_SCHEMA,
+  DELIVERY_ADDRESS_VALIDATION_SCHEMA,
+  REVIEW_COMMENT_VALIDATION_SCHEMA,
 };
 
 module.exports.PAGINATION_VALIDATION_SCHEMA = yup.object({
@@ -119,19 +147,37 @@ module.exports.ID_VALIDATION_SCHEMA = yup
   );
 
 module.exports.CREATE_PRODUCT_VALIDATION_SCHEMA = yup.object({
-  productName: PRODUCT_NAME_SCHEMA.required('Product name is required'),
-  description: DESCRIPTION_SCHEMA.required('Description is required'),
-  category: CATEGORY_SCHEMA.required(`Category is required`),
+  productName: PRODUCT_NAME_VALIDATION_SCHEMA.required(
+    'Product name is required'
+  ),
+  description: DESCRIPTION_VALIDATION_SCHEMA.required(
+    'Description is required'
+  ),
+  category: CATEGORY_VALIDATION_SCHEMA.required(`Category is required`),
   price: PRICE_VALIDATION_SCHEMA.required('Price is required'),
-  count: COUNT_SCHEMA.required('Count is required'),
-  discount: DISCOUNT_SCHEMA,
+  count: COUNT_VALIDATION_SCHEMA.required('Count is required'),
+  discount: DISCOUNT_VALIDATION_SCHEMA,
 });
 
 module.exports.UPDATE_PRODUCT_VALIDATION_SCHEMA = yup.object({
-  productName: PRODUCT_NAME_SCHEMA,
-  description: DESCRIPTION_SCHEMA,
-  category: CATEGORY_SCHEMA,
+  productName: PRODUCT_NAME_VALIDATION_SCHEMA,
+  description: DESCRIPTION_VALIDATION_SCHEMA,
+  category: CATEGORY_VALIDATION_SCHEMA,
   price: PRICE_VALIDATION_SCHEMA,
-  count: COUNT_SCHEMA,
-  discount: DISCOUNT_SCHEMA,
+  count: COUNT_VALIDATION_SCHEMA,
+  discount: DISCOUNT_VALIDATION_SCHEMA,
+});
+
+module.exports.CREATE_CLIENT_VALIDATION_SCHEMA = yup.object({
+  clientName: CLIENT_NAME_VALIDATION_SCHEMA.required('Client name is required'),
+  email: EMAIL_VALIDATION_SCHEMA.required('Email is required'),
+  password: PASSWORD_VALIDATION_SCHEMA.required('Password is required'),
+  deliveryAddress: DELIVERY_ADDRESS_VALIDATION_SCHEMA,
+});
+
+module.exports.UPDATE_CLIENT_VALIDATION_SCHEMA = yup.object({
+  clientName: CLIENT_NAME_VALIDATION_SCHEMA,
+  email: EMAIL_VALIDATION_SCHEMA,
+  password: PASSWORD_VALIDATION_SCHEMA,
+  deliveryAddress: DELIVERY_ADDRESS_VALIDATION_SCHEMA,
 });

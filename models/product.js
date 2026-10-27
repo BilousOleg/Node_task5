@@ -1,11 +1,11 @@
 const mongoose = require('mongoose');
 const convertDecimal128 = require('../utils/convertDecimal128');
 const {
-  PRODUCT_NAME_SCHEMA,
-  DESCRIPTION_SCHEMA,
+  PRODUCT_NAME_VALIDATION_SCHEMA,
+  DESCRIPTION_VALIDATION_SCHEMA,
   PRICE_VALIDATION_SCHEMA,
-  COUNT_SCHEMA,
-  DISCOUNT_SCHEMA,
+  COUNT_VALIDATION_SCHEMA,
+  DISCOUNT_VALIDATION_SCHEMA,
 } = require('../utils/validationSchemas');
 const { CATEGORIES } = require('../constants');
 
@@ -17,7 +17,8 @@ const productSchema = new mongoose.Schema({
     required: true,
     trim: true,
     validate: {
-      validator: v => v != null && PRODUCT_NAME_SCHEMA.isValidSync(v),
+      validator: v =>
+        v != null && PRODUCT_NAME_VALIDATION_SCHEMA.isValidSync(v),
       message: 'Invalid product name',
     },
   },
@@ -26,7 +27,7 @@ const productSchema = new mongoose.Schema({
     required: true,
     trim: true,
     validate: {
-      validator: v => v != null && DESCRIPTION_SCHEMA.isValidSync(v),
+      validator: v => v != null && DESCRIPTION_VALIDATION_SCHEMA.isValidSync(v),
       message: 'Invalid description',
     },
   },
@@ -47,7 +48,7 @@ const productSchema = new mongoose.Schema({
     type: Number,
     required: true,
     validate: {
-      validator: v => v != null && COUNT_SCHEMA.isValidSync(v),
+      validator: v => v != null && COUNT_VALIDATION_SCHEMA.isValidSync(v),
       message: 'Count must be non-negative integer',
     },
   },
@@ -55,7 +56,7 @@ const productSchema = new mongoose.Schema({
     type: Number,
     default: null,
     validate: {
-      validator: v => v == null || DISCOUNT_SCHEMA.isValidSync(v),
+      validator: v => v == null || DISCOUNT_VALIDATION_SCHEMA.isValidSync(v),
       message: 'Discount must be an integer between 0 and 100',
     },
   },

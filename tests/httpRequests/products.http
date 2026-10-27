@@ -47,3 +47,21 @@ GET http://localhost:5000/api/products?page=1&results=10
 ### 200
 
 GET http://localhost:5000/api/products/6adf3e396433d0a6ab4cb09e
+
+### 200
+
+PATCH http://localhost:5000/api/products/6adf3e396433d0a6ab4cb09e
+Content-Type: application/json
+
+{
+  "productName": "Wireless Headphones123",
+  "description": "Wireless headphones123 with long battery life for everyday use.",
+  "category": "Audio Equipment",
+  "price": "79.99",
+  "count": 34,
+  "discount": 15
+}
+
+### 204
+
+DELETE http://localhost:5000/api/products/6adf39e040b1fbc3f8f79abc

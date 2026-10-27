@@ -1,5 +1,6 @@
+const mongoose = require('mongoose');
 const createHttpError = require('http-errors');
-const { Product } = require('../models');
+const { Product, Client } = require('../models');
 
 module.exports.createProduct = async (req, res, next) => {
   const { body } = req;
@@ -45,5 +46,48 @@ module.exports.getProductById = async (req, res, next) => {
     res.status(200).send({ data: foundProduct });
   } catch (err) {
     next(err);
+  }
+};
+
+module.exports.updateProductById = async (req, res, next) => {
+  const {
+    params: { id },
+    body,
+  } = req;
+
+  try {
+    const updatedProduct = await Product.findByIdAndUpdate(id, body, {
+      returnDocument: 'after',
+      runValidators: true,
+    });
+
+    if (!updatedProduct) {
+      return next(createHttpError(404, 'Product Not Found'));
+    }
+
+    res.status(200).send({ data: updatedProduct });
+  } catch (err) {
+    next(err);
+  }
+};
+
+module.exports.deleteProductById = async (req, res, next) => {
+  const { id } = req.params;
+
+  try {
+    const deletedProduct = await Product.findByIdAndDelete(id);
+
+    if (!deletedProduct) {
+      return next(createHttpError(404, 'Product Not Found'));
+    }
+
+    await Client.updateMany(
+      { favoriteProducts: deletedProduct._id },
+      { $pull: { favoriteProducts: deletedProduct._id } }
+    );
+
+    return res.status(204).send();
+  } catch (err) {
+    return next(err);
   }
 };

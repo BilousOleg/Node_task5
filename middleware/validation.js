@@ -3,6 +3,8 @@ const {
   ID_VALIDATION_SCHEMA,
   CREATE_PRODUCT_VALIDATION_SCHEMA,
   UPDATE_PRODUCT_VALIDATION_SCHEMA,
+  CREATE_CLIENT_VALIDATION_SCHEMA,
+  UPDATE_CLIENT_VALIDATION_SCHEMA,
 } = require('../utils/validationSchemas');
 const validateWithSchema = require('../utils/validateWithSchema');
 
@@ -35,4 +37,12 @@ module.exports.validateProductOnCreate = validateWithSchema(
 
 module.exports.validateProductOnUpdate = validateWithSchema(
   UPDATE_PRODUCT_VALIDATION_SCHEMA
+);
+
+module.exports.validateClientOnCreate = validateWithSchema(
+  CREATE_CLIENT_VALIDATION_SCHEMA
+);
+
+module.exports.validateClientOnUpdate = validateWithSchema(
+  UPDATE_CLIENT_VALIDATION_SCHEMA
 );

@@ -15,7 +15,13 @@ productsRouter
 
 productsRouter.use('/:id', validation.validateId);
 
-productsRouter.route('/:id').get(productsController.getProductById);
-// .delete().patch()
+productsRouter
+  .route('/:id')
+  .get(productsController.getProductById)
+  .patch(
+    validation.validateProductOnUpdate,
+    productsController.updateProductById
+  )
+  .delete(productsController.deleteProductById);
 
 module.exports = productsRouter;
