@@ -1,7 +1,7 @@
 module.exports = {
   development: {
-    host: process.env.DB_HOST,
-    port: process.env.DB_PORT,
-    dbName: process.env.DB_NAME,
+    host: process.env.DB_HOST || 'localhost',
+    port: process.env.DB_PORT || 27017,
+    dbName: process.env.DB_NAME || 'mongo_phones_development',
   },
 };
