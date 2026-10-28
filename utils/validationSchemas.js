@@ -1,6 +1,6 @@
 const yup = require('yup');
 const mongoose = require('mongoose');
-const { GENDERS } = require('../constants');
+const { GENDERS, NAME_REGEX, SCREEN_DIAGONAL_REGEX } = require('../constants');
 
 const textValidationSchema = fieldName =>
   yup
@@ -34,7 +34,12 @@ const numberValidationSchema = fieldName =>
     .number()
     .typeError(`${fieldName} must be a number`)
     .min(1, `${fieldName} must be at least 1`)
-    .max(99.9, `${fieldName} must not exceed 99.9`);
+    .max(99.99, `${fieldName} must not exceed 99.9`)
+    .test(
+      'check-price-digits',
+      'Diagonal must be a decimal number from 1 to 99.99, with 2 symbols precision',
+      value => SCREEN_DIAGONAL_REGEX.test(String(value))
+    );
 
 const booleanValidationSchema = fieldName =>
   yup.boolean().typeError(`${fieldName} must be a boolean`);
@@ -106,10 +111,12 @@ const birthdayField = yup
   );
 
 module.exports.CREATE_USER_VALIDATION_SCHEMA = yup.object({
-  firstName: textValidationSchema('First name').required(
-    'Last name is required'
-  ),
-  lastName: textValidationSchema('Last name').required('Last name is required'),
+  firstName: textValidationSchema('First name')
+    .matches(NAME_REGEX)
+    .required('Last name is required'),
+  lastName: textValidationSchema('Last name')
+    .matches(NAME_REGEX)
+    .required('Last name is required'),
   email: EMAIL_VALIDATION_SCHEMA.required('Email is required'),
   birthday: birthdayField.required('Birthday is required'),
   gender: genderField.required('Gender is required'),

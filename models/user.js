@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const { EMAIL_VALIDATION_SCHEMA } = require('../utils/validationSchemas');
-const { GENDERS } = require('../constants');
+const { GENDERS, NAME_REGEX } = require('../constants');
 
 const userSchema = new mongoose.Schema(
   {
@@ -9,14 +9,14 @@ const userSchema = new mongoose.Schema(
       required: true,
       minLength: 2,
       maxLength: 64,
-      match: /^[A-Z][a-z]+$/,
+      match: NAME_REGEX,
     },
     lastName: {
       type: String,
       required: true,
       minLength: 2,
       maxLength: 64,
-      match: /^[A-Z][a-z]+$/,
+      match: NAME_REGEX,
     },
     email: {
       type: String,

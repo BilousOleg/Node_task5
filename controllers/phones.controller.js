@@ -117,24 +117,33 @@ module.exports.createUserPhone = async (req, res, next) => {
 };
 
 module.exports.getUserPhones = async (req, res, next) => {
-  const { id } = req.params;
+  const {
+    params: { id },
+    pagination: { limit, skip },
+  } = req;
 
   try {
-    const foundPhones = await User.aggregate()
-      .match({ _id: new mongoose.Types.ObjectId(id) })
-      .lookup({
-        from: 'phones',
-        localField: '_id',
-        foreignField: 'userId',
-        as: 'userPhones',
-      })
-      .project({ userPhones: 1, _id: 0 });
+    const foundPhones = await User.aggregate([
+      { $match: { _id: new mongoose.Types.ObjectId(id) } },
+      {
+        $lookup: {
+          from: 'phones',
+          localField: '_id',
+          foreignField: 'userId',
+          as: 'userPhones',
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          userPhones: { $slice: ['$userPhones', skip, limit] },
+        },
+      },
+    ]);
 
     if (!foundPhones.length) {
       return next(createHttpError(404, 'User Not Found'));
     }
-
-    console.log(foundPhones);
 
     const userPhones = foundPhones[0].userPhones.map(phone => ({
       ...phone,

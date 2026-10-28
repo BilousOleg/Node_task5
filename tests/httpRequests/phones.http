@@ -37,15 +37,15 @@ POST http://localhost:5000/api/users/6adbf2308f82ce46f16984da/phones
 Content-Type: application/json
 
 {
-  "model": "Galaxy A19",
+  "model": "Galaxy A2",
   "brand": "Samsung",
   "manufacturedYear": 2019,
   "ramSize": 7000,
   "cpu": "Exynos 990",
-  "screenDiagonal": 6.1,
+  "screenDiagonal": 6.123,
   "hasNfc": true
 }
 
 ### 200
 
-GET http://localhost:5000/api/users/6adbf2308f82ce46f16984da/phones
+GET http://localhost:5000/api/users/6adbf2308f82ce46f16984da/phones?page=1&results=3

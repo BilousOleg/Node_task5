@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const { SCREEN_DIAGONAL_REGEX } = require('../constants');
 
 const currentYear = new Date().getFullYear();
 
@@ -62,7 +63,7 @@ const phoneSchema = new mongoose.Schema(
       min: 1,
       max: 99.99,
       validate: {
-        validator: value => /^\d{1,2}(\.\d{1,2})?$/.test(value.toString()),
+        validator: value => SCREEN_DIAGONAL_REGEX.test(value.toString()),
         message:
           'Diagonal must be a decimal number from 1 to 99.99, with 2 symbols precision',
       },

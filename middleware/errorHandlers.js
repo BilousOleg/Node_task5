@@ -24,7 +24,7 @@ module.exports.dbErrorHandler = (err, req, res, next) => {
   }
 
   if (err instanceof ValidationError) {
-    const errors = err.errors.map(e => ({
+    const errors = Object.values(err.errors).map(e => ({
       status: 422,
       title: e.message,
     }));
@@ -48,8 +48,6 @@ module.exports.errorHandler = async (err, req, res, next) => {
   if (res.headersSent) {
     return;
   }
-
-  console.log(err.code);
 
   const status = err.status || 500;
   const message = err.message || 'Server Error';
