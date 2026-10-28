@@ -5,6 +5,7 @@ const {
   CLIENT_NAME_VALIDATION_SCHEMA,
   DELIVERY_ADDRESS_VALIDATION_SCHEMA,
 } = require('../utils/validationSchemas');
+const { CLIENT_STATUSES } = require('../constants');
 
 const hashPassword = value => {
   if (value == null) return value;
@@ -113,6 +114,12 @@ const clientSchema = new mongoose.Schema({
     type: String,
     required: true,
     set: hashPassword,
+  },
+  status: {
+    type: String,
+    enum: CLIENT_STATUSES,
+    default: 'active',
+    required: true,
   },
   deliveryAddress: {
     type: deliveryAddressSchema,

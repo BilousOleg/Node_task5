@@ -1,6 +1,6 @@
 const { Router } = require('express');
 const { validation, paginate } = require('../middleware');
-const { productsController } = require('../controllers');
+const { productsController, reviewsController } = require('../controllers');
 
 const productsRouter = Router();
 
@@ -13,7 +13,7 @@ productsRouter
     productsController.getProducts
   );
 
-productsRouter.use('/:id', validation.validateId);
+productsRouter.use('/:id', validation.validateId('id'));
 
 productsRouter
   .route('/:id')
@@ -23,5 +23,12 @@ productsRouter
     productsController.updateProductById
   )
   .delete(productsController.deleteProductById);
+
+productsRouter.get(
+  '/:id/reviews',
+  validation.validatePagination,
+  paginate.pagination,
+  reviewsController.getProductReviews
+);
 
 module.exports = productsRouter;

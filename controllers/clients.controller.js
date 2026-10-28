@@ -77,7 +77,14 @@ module.exports.deleteClientById = async (req, res, next) => {
   const { id } = req.params;
 
   try {
-    const deletedClient = await Client.findByIdAndDelete(id);
+    const deletedClient = await Client.findOneAndUpdate(
+      { _id: id },
+      { $set: { status: 'deleted' } },
+      {
+        returnDocument: 'after',
+        runValidators: true,
+      }
+    );
 
     if (!deletedClient) {
       return next(createHttpError(404, 'Client Not Found'));

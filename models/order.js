@@ -1,6 +1,10 @@
 const mongoose = require('mongoose');
 const convertDecimal128 = require('../utils/convertDecimal128');
-const { PRICE_VALIDATION_SCHEMA } = require('../utils/validationSchemas');
+const {
+  PRICE_VALIDATION_SCHEMA,
+  QUANTITY_VALIDATION_SCHEMA,
+  PRODUCT_NAME_VALIDATION_SCHEMA,
+} = require('../utils/validationSchemas');
 const { ORDER_STATUSES } = require('../constants');
 
 const convertUnitPrice = convertDecimal128('unitPrice');
@@ -13,21 +17,30 @@ const orderItemSchema = new mongoose.Schema(
       ref: 'Product',
       required: true,
     },
+    productName: {
+      type: String,
+      required: true,
+      trim: true,
+      validate: {
+        validator: v =>
+          v != null && PRODUCT_NAME_VALIDATION_SCHEMA.isValidSync(v),
+        message: 'Invalid product name',
+      },
+    },
     quantity: {
       type: Number,
       required: true,
-      min: [1, 'Quantity must be at least 1'],
       validate: {
-        validator: Number.isInteger,
-        message: 'Quantity must be an integer',
+        validator: v => v != null && QUANTITY_VALIDATION_SCHEMA.isValidSync(v),
+        message: 'Quantity must be an integer, greater than zero',
       },
     },
     unitPrice: {
       type: mongoose.Schema.Types.Decimal128,
       required: true,
-      min: [0.01, 'Price must be greater than 0'],
       validate: {
-        validator: v => PRICE_VALIDATION_SCHEMA.isValidSync(v.toString()),
+        validator: v =>
+          v != null && PRICE_VALIDATION_SCHEMA.isValidSync(v.toString()),
         message: 'Price must be positive and have at most 2 decimal places',
       },
     },
@@ -53,9 +66,9 @@ const orderSchema = new mongoose.Schema(
     totalPrice: {
       type: mongoose.Schema.Types.Decimal128,
       required: true,
-      min: [0.01, 'Total price must be greater than 0'],
       validate: {
-        validator: v => PRICE_VALIDATION_SCHEMA.isValidSync(v.toString()),
+        validator: v =>
+          v != null && PRICE_VALIDATION_SCHEMA.isValidSync(v.toString()),
         message:
           'Total price must be positive and have at most 2 decimal places',
       },
@@ -84,6 +97,7 @@ orderSchema.set('toJSON', {
       });
     }
 
+    delete ret.updatedAt;
     delete ret.__v;
     return ret;
   },

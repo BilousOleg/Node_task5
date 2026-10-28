@@ -1,5 +1,8 @@
 const mongoose = require('mongoose');
-const { REVIEW_COMMENT_SCHEMA } = require('../utils/validationSchemas');
+const {
+  REVIEW_COMMENT_VALIDATION_SCHEMA,
+  RATING_VALIDATION_SCHEMA,
+} = require('../utils/validationSchemas');
 
 const reviewSchema = new mongoose.Schema(
   {
@@ -17,18 +20,18 @@ const reviewSchema = new mongoose.Schema(
     rating: {
       type: Number,
       required: true,
-      min: 1,
-      max: 5,
       validate: {
-        validator: Number.isInteger,
-        message: 'Rating must be an integer',
+        validator: v => v != null && RATING_VALIDATION_SCHEMA.isValidSync(v),
+        message: 'Rating must be an integer from 1 to 5',
       },
     },
     comment: {
       type: String,
       trim: true,
+      required: true,
       validate: {
-        validator: v => REVIEW_COMMENT_SCHEMA.isValidSync(v),
+        validator: v =>
+          v != null && REVIEW_COMMENT_VALIDATION_SCHEMA.isValidSync(v),
         message: 'Invalid comment',
       },
     },

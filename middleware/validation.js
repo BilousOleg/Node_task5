@@ -5,6 +5,9 @@ const {
   UPDATE_PRODUCT_VALIDATION_SCHEMA,
   CREATE_CLIENT_VALIDATION_SCHEMA,
   UPDATE_CLIENT_VALIDATION_SCHEMA,
+  CREATE_ORDER_VALIDATION_SCHEMA,
+  CREATE_REVIEW_VALIDATION_SCHEMA,
+  UPDATE_REVIEW_VALIDATION_SCHEMA,
 } = require('../utils/validationSchemas');
 const validateWithSchema = require('../utils/validateWithSchema');
 
@@ -20,11 +23,12 @@ module.exports.validatePagination = async (req, res, next) => {
   }
 };
 
-module.exports.validateId = async (req, res, next) => {
-  const { id } = req.params;
-
+module.exports.validateId = paramName => async (req, res, next) => {
   try {
-    req.params.id = await ID_VALIDATION_SCHEMA.validate(id);
+    req.params[paramName] = await ID_VALIDATION_SCHEMA.validate(
+      req.params[paramName]
+    );
+
     next();
   } catch (err) {
     next(err);
@@ -45,4 +49,16 @@ module.exports.validateClientOnCreate = validateWithSchema(
 
 module.exports.validateClientOnUpdate = validateWithSchema(
   UPDATE_CLIENT_VALIDATION_SCHEMA
+);
+
+module.exports.validateOrderOnCreate = validateWithSchema(
+  CREATE_ORDER_VALIDATION_SCHEMA
+);
+
+module.exports.validateReviewOnCreate = validateWithSchema(
+  CREATE_REVIEW_VALIDATION_SCHEMA
+);
+
+module.exports.validateReviewOnUpdate = validateWithSchema(
+  UPDATE_REVIEW_VALIDATION_SCHEMA
 );

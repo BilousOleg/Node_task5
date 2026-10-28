@@ -12,7 +12,7 @@ clientFavoritesRouter
     clientsController.getClientFavoritesById
   );
 
-clientFavoritesRouter.use('/:productId', validation.validateId);
+clientFavoritesRouter.use('/:productId', validation.validateId('productId'));
 
 clientFavoritesRouter
   .route('/:productId')

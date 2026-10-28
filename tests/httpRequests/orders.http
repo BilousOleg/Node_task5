@@ -1,0 +1,28 @@
+### 201
+POST http://localhost:5000/api/clients/6ae08637b424b737f7c1dc78/orders
+Content-Type: application/json
+
+{
+  "items": [
+    {
+      "productId": "6ae087c5b424b737f7c1dc7a",
+      "quantity": 2
+    },
+    {
+      "productId": "6ae087c6b424b737f7c1dc7b",
+      "quantity": 1
+    }
+  ]
+}
+
+### 200
+
+GET http://localhost:5000/api/clients/6ae08637b424b737f7c1dc78/orders
+
+### 200
+
+GET http://localhost:5000/api/clients/6ae08637b424b737f7c1dc78/orders/6ae08a2411b4a415db0d3486
+
+### 200
+
+PATCH http://localhost:5000/api/clients/6ae08637b424b737f7c1dc78/orders/6ae08a2411b4a415db0d3486/cancel

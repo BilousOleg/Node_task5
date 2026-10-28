@@ -13,7 +13,8 @@ const CONSTANTS = {
     'Audio Equipment',
     'Gaming Consoles',
   ],
-  ORDER_STATUSES: ['new', 'processing', 'shipped', 'delivered'],
+  ORDER_STATUSES: ['new', 'processing', 'shipped', 'delivered', 'cancelled'],
+  CLIENT_STATUSES: ['active', 'deleted'],
   PRICE_REGEX: /^\d{1,8}(\.\d{1,2})?$/,
 };
 

@@ -1,0 +1,33 @@
+### 201
+POST http://localhost:5000/api/clients/6ae08638b424b737f7c1dc79/products/6ae087c5b424b737f7c1dc7a/reviews
+Content-Type: application/json
+
+{
+  "rating": 3,
+  "comment": "Test test, test test test!?"
+}
+
+### 200
+
+GET http://localhost:5000/api/products/6ae087c5b424b737f7c1dc7a/reviews
+
+### 200
+
+GET http://localhost:5000/api/clients/6ae08638b424b737f7c1dc79/reviews
+
+### 200
+
+GET http://localhost:5000/api/reviews/6ae1486a6ce52e84f5c97276
+
+### 200
+
+PATCH http://localhost:5000/api/reviews/6ae1486a6ce52e84f5c97276
+Content-Type: application/json
+
+{
+  "comment": "Test Testovych"
+}
+
+### 204
+
+DELETE http://localhost:5000/api/reviews/6ae1486a6ce52e84f5c97276
