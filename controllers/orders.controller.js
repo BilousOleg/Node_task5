@@ -30,18 +30,51 @@ module.exports.createClientOrder = async (req, res, next) => {
         return next(createHttpError(404, 'Product Not Found'));
       }
 
-      if (foundProduct.count < item.quantity) {
+      // Оновлення кількості товарів на складі
+      // Може виникнути проблема, якщо хоча б один з товарів буде недоступний
+      // (невірний productId, тощо). Скоріше за все, потрібна транзакція
+      const updatedProduct = await Product.findOneAndUpdate(
+        {
+          _id: item.productId,
+          count: { $gte: item.quantity },
+        },
+        {
+          $inc: { count: -item.quantity },
+        },
+        {
+          returnDocument: 'after',
+          runValidators: true,
+        }
+      );
+
+      if (!updatedProduct) {
+        const foundProduct = await Product.findById(item.productId);
+
+        if (!foundProduct) {
+          return next(createHttpError(404, 'Product Not Found'));
+        }
+
         return next(createHttpError(400, 'Not enough products in stock'));
       }
+
+      // Враховування знижки
+      const originalPrice = Number(foundProduct.price.toString());
+      const discount = foundProduct.discount ?? 0;
+
+      const discountedPrice = Number(
+        (originalPrice * (1 - discount / 100)).toFixed(2)
+      );
 
       orderItems.push({
         productId: foundProduct._id,
         productName: foundProduct.productName,
         quantity: item.quantity,
-        unitPrice: foundProduct.price,
+        originalUnitPrice: originalPrice.toFixed(2),
+        unitPrice: discountedPrice.toFixed(2),
+        discount,
       });
 
-      totalPrice += Number(foundProduct.price.toString()) * item.quantity;
+      totalPrice += discountedPrice * item.quantity;
     }
 
     const createdOrder = await Order.create({
@@ -135,5 +168,3 @@ module.exports.cancelClientOrderByOrderId = async (req, res, next) => {
     next(err);
   }
 };
-
-// TODO change order status controller

@@ -1,4 +1,3 @@
-const mongoose = require('mongoose');
 const createHttpError = require('http-errors');
 const { Product, Client } = require('../models');
 

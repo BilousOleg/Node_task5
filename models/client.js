@@ -10,7 +10,7 @@ const { CLIENT_STATUSES } = require('../constants');
 const hashPassword = value => {
   if (value == null) return value;
 
-  return hashSync(value, Number(process.env.SALT_ROUNDS));
+  return hashSync(value, Number(process.env.SALT_ROUNDS) || 10);
 };
 
 const deliveryAddressSchema = new mongoose.Schema(
