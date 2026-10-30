@@ -41,7 +41,7 @@ const productSchema = new mongoose.Schema({
     required: true,
     validate: {
       validator: v => v != null && PRICE_VALIDATION_SCHEMA.isValidSync(v),
-      message: 'Price must be positive and have at most 2 decimal places',
+      message: 'Price must be non-negative and have at most 2 decimal places',
     },
   },
   count: {

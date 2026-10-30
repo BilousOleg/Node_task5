@@ -18,7 +18,7 @@ const PRICE_VALIDATION_SCHEMA = yup
   .test(
     'positive',
     'Price must be greater than 0',
-    value => value == null || Number(value) > 0
+    value => value == null || Number(value) >= 0
   );
 
 const noWhitespaceString = (fieldName, { minLen, maxLen } = {}) => {
@@ -69,7 +69,8 @@ const integerNumber = (fieldName, { min, max, defaultValue } = {}) => {
   return schema;
 };
 
-const enumField = enumList => yup.string().oneOf(enumList);
+const enumField = (enumList, fieldName) =>
+  yup.string().oneOf(enumList, `Invalid ${fieldName}`);
 
 const PRODUCT_NAME_VALIDATION_SCHEMA = noWhitespaceString('Product name', {
   minLen: 2,
@@ -81,7 +82,7 @@ const DESCRIPTION_VALIDATION_SCHEMA = noWhitespaceString('Description', {
   maxLen: 2000,
 });
 
-const CATEGORY_VALIDATION_SCHEMA = enumField(CATEGORIES);
+const CATEGORY_VALIDATION_SCHEMA = enumField(CATEGORIES, 'Category');
 
 const COUNT_VALIDATION_SCHEMA = integerNumber('Count', { min: 0 });
 
@@ -201,6 +202,10 @@ module.exports.CREATE_ORDER_VALIDATION_SCHEMA = yup.object({
     .of(ORDER_ITEM_VALIDATION_SCHEMA)
     .min(1, 'Order must contain at least one product')
     .required('Order items are required'),
+});
+
+module.exports.CHANGE_ORDER_STATUS_VALIDATION_SCHEMA = yup.object({
+  status: enumField(ORDER_STATUSES).required('Order status is required'),
 });
 
 module.exports.CREATE_REVIEW_VALIDATION_SCHEMA = yup.object({

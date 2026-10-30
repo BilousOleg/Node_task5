@@ -15,10 +15,12 @@ module.exports.validationErrorHandler = (err, req, res, next) => {
 module.exports.dbErrorHandler = (err, req, res, next) => {
   // Unique
   if (err.code === 11000) {
+    const field = Object.keys(err.keyPattern ?? err.keyValue)[0];
+
     return res.status(422).send([
       {
         status: 422,
-        title: 'An entity with this values already exist',
+        title: `${field} with this values already exist`,
       },
     ]);
   }

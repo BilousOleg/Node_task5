@@ -1,5 +1,6 @@
 const createHttpError = require('http-errors');
 const { Order, Client, Product } = require('../models');
+const { ALLOWED_STATUS_TRANSITIONS } = require('../constants');
 
 module.exports.createClientOrder = async (req, res, next) => {
   const {
@@ -7,32 +8,25 @@ module.exports.createClientOrder = async (req, res, next) => {
     body: { items },
   } = req;
 
+  const deductedItems = [];
+
+  let createdOrder;
+
   try {
     const foundClient = await Client.findById(id);
 
     if (!foundClient) {
-      return next(createHttpError(404, 'Client Not Found'));
+      throw createHttpError(404, 'Client Not Found');
     }
 
     if (foundClient.status === 'deleted') {
-      return next(
-        createHttpError(403, 'Cannot Create Order for Deleted Client')
-      );
+      throw createHttpError(403, 'Cannot Create Order for Deleted Client');
     }
 
     const orderItems = [];
-    let totalPrice = 0;
+    let totalPriceInCents = 0;
 
     for (const item of items) {
-      const foundProduct = await Product.findById(item.productId);
-
-      if (!foundProduct) {
-        return next(createHttpError(404, 'Product Not Found'));
-      }
-
-      // Оновлення кількості товарів на складі
-      // Може виникнути проблема, якщо хоча б один з товарів буде недоступний
-      // (невірний productId, тощо). Скоріше за все, потрібна транзакція
       const updatedProduct = await Product.findOneAndUpdate(
         {
           _id: item.productId,
@@ -51,42 +45,74 @@ module.exports.createClientOrder = async (req, res, next) => {
         const foundProduct = await Product.findById(item.productId);
 
         if (!foundProduct) {
-          return next(createHttpError(404, 'Product Not Found'));
+          throw createHttpError(404, 'Product Not Found');
         }
 
-        return next(createHttpError(400, 'Not enough products in stock'));
+        throw createHttpError(400, 'Not Enough Products in Stock');
       }
 
-      // Враховування знижки
-      const originalPrice = Number(foundProduct.price.toString());
-      const discount = foundProduct.discount ?? 0;
+      deductedItems.push({
+        productId: updatedProduct._id,
+        quantity: item.quantity,
+      });
 
-      const discountedPrice = Number(
-        (originalPrice * (1 - discount / 100)).toFixed(2)
+      const originalPriceInCents = Math.round(
+        Number(updatedProduct.price.toString()) * 100
+      );
+
+      const discount = updatedProduct.discount ?? 0;
+
+      const discountedPriceInCents = Math.round(
+        originalPriceInCents * (1 - discount / 100)
       );
 
       orderItems.push({
-        productId: foundProduct._id,
-        productName: foundProduct.productName,
+        productId: updatedProduct._id,
+        productName: updatedProduct.productName,
         quantity: item.quantity,
-        originalUnitPrice: originalPrice.toFixed(2),
-        unitPrice: discountedPrice.toFixed(2),
+        originalUnitPrice: (originalPriceInCents / 100).toFixed(2),
+        unitPrice: (discountedPriceInCents / 100).toFixed(2),
         discount,
       });
 
-      totalPrice += discountedPrice * item.quantity;
+      totalPriceInCents += discountedPriceInCents * item.quantity;
     }
 
-    const createdOrder = await Order.create({
+    createdOrder = await Order.create({
       clientId: foundClient._id,
       items: orderItems,
-      totalPrice: totalPrice.toFixed(2),
+      totalPrice: (totalPriceInCents / 100).toFixed(2),
     });
-
-    res.status(201).send({ data: createdOrder });
   } catch (err) {
-    next(err);
+    // Компенсація товарів, які були списані, але відбулася помилка
+    // і замовлення не створилося
+    let rollbackFailed = false;
+
+    for (const item of deductedItems) {
+      try {
+        await Product.updateOne(
+          { _id: item.productId },
+          { $inc: { count: item.quantity } }
+        );
+      } catch (rollbackError) {
+        rollbackFailed = true;
+        console.error('Stock rollback failed:', rollbackError);
+      }
+    }
+
+    if (rollbackFailed) {
+      return next(
+        createHttpError(
+          500,
+          'Order Creation Failed. Stock Restoration Requires Manual Review'
+        )
+      );
+    }
+
+    return next(err);
   }
+
+  res.status(201).send({ data: createdOrder });
 };
 
 module.exports.getClientOrdersById = async (req, res, next) => {
@@ -152,14 +178,53 @@ module.exports.cancelClientOrderByOrderId = async (req, res, next) => {
         $set: { status: 'cancelled' },
       },
       {
-        new: true,
+        returnDocument: 'after',
         runValidators: true,
       }
     );
 
     if (!updatedOrder) {
       return next(
-        createHttpError(404, 'Order Not Found or Cannot Be Cancelled')
+        createHttpError(400, 'Order Not Found or Cannot Be Cancelled')
+      );
+    }
+
+    res.status(200).send({ data: updatedOrder });
+  } catch (err) {
+    next(err);
+  }
+};
+
+module.exports.changeOrderStatusByOrderId = async (req, res, next) => {
+  const {
+    params: { id },
+    body: { status },
+  } = req;
+
+  try {
+    const allowedCurrentStatuses = Object.keys(
+      ALLOWED_STATUS_TRANSITIONS
+    ).filter(currentStatus =>
+      ALLOWED_STATUS_TRANSITIONS[currentStatus].includes(status)
+    );
+
+    const updatedOrder = await Order.findOneAndUpdate(
+      {
+        _id: id,
+        status: { $in: allowedCurrentStatuses },
+      },
+      {
+        $set: { status },
+      },
+      {
+        returnDocument: 'after',
+        runValidators: true,
+      }
+    );
+
+    if (!updatedOrder) {
+      return next(
+        createHttpError(409, 'Order Not Found or Status Cannot Be Changed')
       );
     }
 

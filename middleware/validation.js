@@ -8,6 +8,7 @@ const {
   CREATE_ORDER_VALIDATION_SCHEMA,
   CREATE_REVIEW_VALIDATION_SCHEMA,
   UPDATE_REVIEW_VALIDATION_SCHEMA,
+  CHANGE_ORDER_STATUS_VALIDATION_SCHEMA,
 } = require('../utils/validationSchemas');
 const validateWithSchema = require('../utils/validateWithSchema');
 
@@ -53,6 +54,10 @@ module.exports.validateClientOnUpdate = validateWithSchema(
 
 module.exports.validateOrderOnCreate = validateWithSchema(
   CREATE_ORDER_VALIDATION_SCHEMA
+);
+
+module.exports.validateOrderStatusOnChange = validateWithSchema(
+  CHANGE_ORDER_STATUS_VALIDATION_SCHEMA
 );
 
 module.exports.validateReviewOnCreate = validateWithSchema(

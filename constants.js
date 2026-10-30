@@ -14,6 +14,13 @@ const CONSTANTS = {
     'Gaming Consoles',
   ],
   ORDER_STATUSES: ['new', 'processing', 'shipped', 'delivered', 'cancelled'],
+  ALLOWED_STATUS_TRANSITIONS: {
+    new: ['processing', 'cancelled'],
+    processing: ['shipped', 'cancelled'],
+    shipped: ['delivered'],
+    delivered: [],
+    cancelled: [],
+  },
   CLIENT_STATUSES: ['active', 'deleted'],
   PRICE_REGEX: /^\d{1,8}(\.\d{1,2})?$/,
 };

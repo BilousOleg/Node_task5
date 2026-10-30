@@ -43,7 +43,7 @@ const orderItemSchema = new mongoose.Schema(
       validate: {
         validator: v =>
           v != null && PRICE_VALIDATION_SCHEMA.isValidSync(v.toString()),
-        message: 'Price must be positive and have at most 2 decimal places',
+        message: 'Price must be non-negative and have at most 2 decimal places',
       },
     },
     unitPrice: {
@@ -52,7 +52,7 @@ const orderItemSchema = new mongoose.Schema(
       validate: {
         validator: v =>
           v != null && PRICE_VALIDATION_SCHEMA.isValidSync(v.toString()),
-        message: 'Price must be positive and have at most 2 decimal places',
+        message: 'Price must be non-negative and have at most 2 decimal places',
       },
     },
     discount: {
@@ -89,7 +89,7 @@ const orderSchema = new mongoose.Schema(
         validator: v =>
           v != null && PRICE_VALIDATION_SCHEMA.isValidSync(v.toString()),
         message:
-          'Total price must be positive and have at most 2 decimal places',
+          'Total price must be non-negative and have at most 2 decimal places',
       },
     },
     status: {

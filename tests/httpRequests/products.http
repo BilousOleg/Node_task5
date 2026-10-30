@@ -4,12 +4,12 @@ POST http://localhost:5000/api/products
 Content-Type: application/json
 
 {
-  "productName": "Wireless Headphones",
-  "description": "Comfortable wireless abc headphones with abc active noise cancellation and long battery life for everyday use.",
+  "productName": "Free Product",
+  "description": "Comfortable free aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa product",
   "category": "Audio Equipment",
   "price": "99.99",
   "count": 25,
-  "discount": 10
+  "discount": 100
 }
 
 ### 201
