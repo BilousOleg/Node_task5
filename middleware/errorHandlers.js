@@ -18,7 +18,7 @@ module.exports.dbErrorHandler = (err, req, res, next) => {
     return res.status(422).send([
       {
         status: 422,
-        title: 'A phone with this values already exist',
+        title: 'An entity with this values already exist',
       },
     ]);
   }
@@ -44,7 +44,7 @@ module.exports.dbErrorHandler = (err, req, res, next) => {
   next(err);
 };
 
-module.exports.errorHandler = async (err, req, res, next) => {
+module.exports.errorHandler = (err, req, res, next) => {
   if (res.headersSent) {
     return;
   }
