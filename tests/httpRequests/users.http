@@ -4,8 +4,8 @@ POST http://localhost:5000/api/users
 Content-Type: application/json
 
 {
-  "firstName": "qest",
-  "lastName": "qestovych",
+  "firstName": "Qest",
+  "lastName": "Qestovych",
   "email": "test@test.com",
   "birthday": "2020-01-01",
   "gender": "male"
